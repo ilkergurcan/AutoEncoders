@@ -72,8 +72,8 @@ if __name__ == "__main__":
     cv2.imshow("", ori)
     cv2.waitKey(0)
 
-    # encoder = encoder(latent_size, 0.01)
-    # encoder = encoder.to(device)
+#     encoder = encoder(latent_size, 0.01)
+#     encoder = encoder.to(device)
     # #summary(encoder, (64, 1, 32, 32))
     #
     # decoder = decoder(latent_size, 0.01)
@@ -82,56 +82,57 @@ if __name__ == "__main__":
 
     autoencoder = autoencoder(latent_size)
     autoencoder = autoencoder.to(device)
-    # for epoch in range(epochs):
-    #     print("sa")
-    #     en = iter(coloredloader)
-    #     A_loss_total = 0
-    #     for batch_idx, (images, labels) in enumerate(grayscaleloader):
-    #         images = images.to(device)
-    #         autoencoder.optimizer.zero_grad()
-    #         colorized = autoencoder.forward(images)
-    #
-    #         original, _ = en.next()
-    #         original = original.to(device)
-    #         A_loss = autoencoder.loss(colorized, original).to(device)
-    #         A_loss_total += A_loss.item()
-    #         A_loss.backward()
-    #
-    #         A_optim = autoencoder.optimizer
-    #         A_optim.step()
-    #
-    #     print(f"For epoch {epoch} Discriminator Loss is : {A_loss_total / len(grayscaleloader)}")
-    #
-    # autoencoder.save_checkpoint()
-    #
-    #
+    
+    for epoch in range(epochs):
+        print("sa")
+        en = iter(coloredloader)
+        A_loss_total = 0
+        for batch_idx, (images, labels) in enumerate(grayscaleloader):
+            images = images.to(device)
+            autoencoder.optimizer.zero_grad()
+            colorized = autoencoder.forward(images)
+    
+            original, _ = en.next()
+            original = original.to(device)
+            A_loss = autoencoder.loss(colorized, original).to(device)
+            A_loss_total += A_loss.item()
+            A_loss.backward()
+    
+            A_optim = autoencoder.optimizer
+            A_optim.step()
+    
+        print(f"For epoch {epoch} Discriminator Loss is : {A_loss_total / len(grayscaleloader)}")
+    
+    autoencoder.save_checkpoint()
+    
+    
     autoencoder.load_checkpoint()
 
-    # def save_images():
-    #     autoencoder.eval()
-    #     gray_image, _ = next(test_gray)
-    #     gray_image = T.Tensor(gray_image).to(device)
-    #
-    #     colorized = autoencoder.forward(gray_image)
-    #
-    #     original, _ = next(test_clr)
-    #     counter = 0
-    #     for image in colorized:
-    #         img = image.view(image.shape[1], image.shape[2], image.shape[0])
-    #         img = img.cpu().detach()
-    #         img = np.array(img)
-    #
-    #         gray_im = gray_image[counter].view(gray_image[counter].shape[1], gray_image[counter].shape[2], gray_image[counter].shape[0])
-    #         gray_im = gray_im.cpu().detach()
-    #         gray_im = np.array(gray_im)
-    #
-    #         ori = original[counter].view(original[counter].shape[1], original[counter].shape[2], original[counter].shape[0])
-    #         ori = ori.cpu().detach()
-    #         ori = np.array(ori)
-    #
-    #         cv2.imwrite(f"generated_images/gray{counter}.jpg", 255*gray_im)
-    #         cv2.imwrite(f"generated_images/colorized{counter}.jpg", 255*img)
-    #         cv2.imwrite(f"generated_images/original{counter}.jpg", 255*ori)
-    #         counter += 1
-    #
-    # save_images()
+    def save_images():
+        autoencoder.eval()
+        gray_image, _ = next(test_gray)
+        gray_image = T.Tensor(gray_image).to(device)
+    
+        colorized = autoencoder.forward(gray_image)
+    
+        original, _ = next(test_clr)
+        counter = 0
+        for image in colorized:
+            img = image.view(image.shape[1], image.shape[2], image.shape[0])
+            img = img.cpu().detach()
+            img = np.array(img)
+    
+            gray_im = gray_image[counter].view(gray_image[counter].shape[1], gray_image[counter].shape[2], gray_image[counter].shape[0])
+            gray_im = gray_im.cpu().detach()
+            gray_im = np.array(gray_im)
+    
+            ori = original[counter].view(original[counter].shape[1], original[counter].shape[2], original[counter].shape[0])
+            ori = ori.cpu().detach()
+            ori = np.array(ori)
+    
+            cv2.imwrite(f"generated_images/gray{counter}.jpg", 255*gray_im)
+            cv2.imwrite(f"generated_images/colorized{counter}.jpg", 255*img)
+            cv2.imwrite(f"generated_images/original{counter}.jpg", 255*ori)
+            counter += 1
+    
+    save_images()
